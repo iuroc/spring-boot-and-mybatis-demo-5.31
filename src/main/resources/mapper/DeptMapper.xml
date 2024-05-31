@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iuroc.mapper.DeptMapper">
+    <update id="init"> CREATE TABLE IF NOT EXISTS `dept` ( `id` int unsigned NOT NULL AUTO_INCREMENT
+        COMMENT '主键ID', `name` varchar(50) NOT NULL COMMENT '部门名称', `create_time` datetime NOT NULL
+        DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间', `update_time` datetime NOT NULL DEFAULT
+        CURRENT_TIMESTAMP COMMENT '修改时间', PRIMARY KEY (`id`), UNIQUE KEY `name` (`name`) ) </update>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"> INSERT INTO `dept` (`name`,
+        `create_time`, `update_time`) VALUES (#{name}, #{createTime}, #{updateTime}) </insert>
+    <delete id="deleteById"> DELETE FROM `dept` WHERE `id` = #{id} </delete>
+    <update id="update"> UPDATE `dept` SET `name` = #{name}, `update_time` = #{updateTime} WHERE
+        `id` = #{id} </update>
+    <select id="search" resultType="com.iuroc.model.Dept"> SELECT `id`, `name`, `create_time` AS
+        `createTime`, `update_time` AS `updateTime` FROM `dept` WHERE `name` LIKE CONCAT("%",
+        #{keyword}, "%") LIMIT #{limit} OFFSET #{offset} </select>
+</mapper>

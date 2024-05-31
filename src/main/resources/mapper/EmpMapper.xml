@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iuroc.mapper.EmpMapper">
+    <update id="init"> CREATE TABLE IF NOT EXISTS `emp` ( `id` int unsigned NOT NULL AUTO_INCREMENT
+        COMMENT 'ID', `username` varchar(50) NOT NULL COMMENT '用户名', `password` varchar(255) DEFAULT
+        '123456' COMMENT '密码', `name` varchar(50) NOT NULL COMMENT '姓名', `gender` tinyint unsigned
+        NOT NULL COMMENT '性别, 说明: 1 男, 2 女', `image` varchar(300) DEFAULT NULL COMMENT '图像', `job`
+        tinyint unsigned DEFAULT NULL COMMENT '职位, 说明: 1 班主任,2 讲师, 3 学工主管, 4 教研主管, 5 咨询师',
+        `entry_time` date DEFAULT NULL COMMENT '入职时间', `dept_id` int unsigned DEFAULT NULL COMMENT
+        '部门ID', `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+        `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '修改时间', PRIMARY KEY
+        (`id`), UNIQUE KEY `username` (`username`), KEY `dept_id` (`dept_id`), CONSTRAINT
+        `emp_ibfk_1` FOREIGN KEY (`dept_id`) REFERENCES `dept` (`id`) ) </update>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"> INSERT INTO `emp` (`username`,
+        `password`, `name`, `gender`, `image`, `job`, `entry_time`, `dept_id`, `create_time`,
+        `update_time`) VALUES (#{username}, #{password}, #{name}, #{gender}, #{image}, #{job},
+        #{entryTime}, #{deptId}, #{createTime}, #{updateTime}) </insert>
+
+    <delete id="deleteById"> DELETE FROM `emp` WHERE `id` = #{id} </delete>
+
+    <update id="update">
+        UPDATE `emp`
+        <set>
+            <if test="username != null"> `username` = #{username}, </if>
+            <if test="password != null"> `password` = #{password}, </if>
+            <if test="name != null"> `name` = #{name}, </if>
+            <if test="gender != null"> `gender` = #{gender}, </if>
+            <if test="image != null"> `image` = #{image}, </if>
+            <if test="job != null"> `job` = #{job}, </if>
+            <if test="entryTime != null"> `entry_time` = #{entryTime}, </if>
+            <if test="deptId != null"> `dept_id` = #{deptId}, </if>
+            <if test="updateTime != null"> `update_time` = #{updateTime}, </if>
+        </set>
+        WHERE `id` = #{id}
+    </update>
+
+    <select id="search">
+        SELECT
+            `id`, `username`, `password`, `name`,
+            `gender`, `image`, `job`, `entry_time` AS `entryTime`,
+            `dept_id` AS `deptId`, `create_time` AS `createTime`,
+            `update_time` AS `updateTime` FROM `emp` 
+        <where>
+            `name` LIKE CONCAT("%", #{nameKeyword}, "%")
+            <if test="gender != null"> AND gender = #{gender} </if>
+            <if test="job != null"> AND job = #{job} </if>
+            <if test="entryTimeStart != null and entryTimeEnd != null">
+                AND `entryTime` BETWEEN #{entryTimeStart} AND #{entryTimeEnd} </if>
+            <if test="deptId != null"> AND `dept_id` == #{deptId} </if>
+        </where>
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+</mapper>
